@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <title>Cotización Taller Arturo</title>
+  </head>
+  <body>
+    <div id="cotizacion">
+      <div class="header">
+        <div class="logo-container">
+          <img id="logo-img" class="logo" alt="Logo de la empresa" />
+          <span id="logo-placeholder" class="logo-text"
+            >SELECCIONE UN LOGO</span
+          >
+        </div>
+        <input
+          type="file"
+          id="logo-input"
+          class="logo-upload"
+          accept="image/*"
+        />
+        <div class="info">
+          <h1>Taller Arturo</h1>
+          <p>
+            Ofreciendo los servicios de mantenimiento y Reparación
+            Automotriz,<br />
+            Diesel, Gasolina e Industrial
+          </p>
+          <p>Email: jarper1972@gmail.com</p>
+          <p>Tel.: 7994-0900</p>
+        </div>
+      </div>
+
+      <div class="section">
+        <!-- Primera fila -->
+        <div class="row">
+          <div class="col" style="flex: 2">
+            <div class="label-above">
+              <label for="cliente">Cliente:</label>
+              <input type="text" id="cliente" />
+            </div>
+            <div class="label-above">
+              <label for="direccion">Dirección:</label>
+              <input type="text" id="direccion" />
+            </div>
+          </div>
+
+          <div class="col" style="flex: 1">
+            <div class="label-above">
+              <label class="marca" for="marca">Marca:</label>
+              <input type="text" id="marca" />
+            </div>
+          </div>
+
+          <div class="col" style="flex: 1">
+            <div class="label-above">
+              <label class="modelo" for="modelo">Modelo:</label>
+              <input type="text" id="modelo" />
+            </div>
+            <div class="label-above">
+              <label class="anio" for="anio">Año:</label>
+              <input type="text" id="anio" />
+            </div>
+            <div class="label-above">
+              <label class="placa" for="placa">Placa:</label>
+              <input type="text" id="placa" />
+            </div>
+          </div>
+
+          <!-- Fecha y checkboxes usando la estructura del segundo código -->
+          <div>
+            <div class="label-above fecha">
+              <label for="fecha">Fecha:</label>
+              <input type="date" id="fecha" />
+            </div>
+
+            <div class="checkbox-group">
+              <label
+                ><input class="checkbox" type="checkbox" /> Cotización</label
+              >
+              <label><input class="checkbox" type="checkbox" /> Envío</label>
+              <label
+                ><input class="checkbox" type="checkbox" /> Orden de
+                compra</label
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- MANTENIMIENTO usando la estructura del segundo código -->
+        <div class="mant">
+          <div>
+            <strong>MANTENIMIENTO:</strong>
+            <label><input type="checkbox" id="chkKm" /> Km</label>
+            <label><input type="checkbox" id="chkMillas" /> Millas</label>
+          </div>
+
+          <div class="mantenimiento-row">
+            <div class="input-group-inline">
+              <label for="motor_actual">Km Motor:</label>
+              <input
+                type="text"
+                id="motor_actual"
+                oninput="calcularProximoMotor()"
+              />
+              <label for="motor_proximo">Próximo:</label>
+              <input type="text" id="motor_proximo" readonly />
+            </div>
+
+            <div class="input-group-inline">
+              <label for="caja_actual">Km Caja:</label>
+              <input
+                type="text"
+                id="caja_actual"
+                oninput="calcularProximoCaja()"
+              />
+              <label for="caja_proximo">Próximo:</label>
+              <input type="text" id="caja_proximo" readonly />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabla de detalle -->
+      <table id="tabla-productos">
+        <thead>
+          <tr>
+            <th>Cant.</th>
+            <th>Descripción</th>
+            <th>Precio Unit.</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody id="detalle">
+          <!-- 15 filas generadas dinámicamente con JS -->
+        </tbody>
+      </table>
+
+      <div class="nota-y-totales">
+        <p>
+          Nota: Esta cotización será válida por
+          <input type="text" size="2" value="" /> días
+        </p>
+
+        <table class="totals">
+          <tr>
+            <td>Sub-Total $</td>
+            <td id="subtotal">0.00</td>
+          </tr>
+          <tr>
+            <td>IVA $</td>
+            <td id="iva">0.00</td>
+          </tr>
+          <tr>
+            <td>Total</td>
+            <td id="total">0.00</td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="bottom">
+        <div class="signature">
+          <div class="signature-text">RECIBIDO</div>
+        </div>
+
+        <div class="signature">
+          <div class="signature-text">
+            N°
+            <span class="numero-cotizacion" id="numero-cotizacion">0001</span>
+          </div>
+        </div>
+        <div class="signature">
+          <div class="signature-text">AUTORIZADO</div>
+        </div>
+      </div>
+    </div>
+
+    <button class="download-btn" id="btnPDF">Descargar PDF</button>
+
+    <!-- Modal personalizado para alerta -->
+    <div class="modal-overlay" id="confirmModal">
+      <div class="modal-content">
+        <h3 class="modal-title">Confirmación</h3>
+        <p class="modal-text">¿Desea descargar la cotización en formato PDF?</p>
+        <div class="modal-buttons">
+          <button class="modal-btn btn-primary" id="btnConfirmar">
+            Confirmar
+          </button>
+          <button class="modal-btn btn-secondary" id="btnCancelar">
+            Cancelar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
