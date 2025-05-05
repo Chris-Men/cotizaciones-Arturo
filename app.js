@@ -1,4 +1,3 @@
-
 let logoLoaded = false;
 
 function inicializarContadorCotizacion() {
@@ -11,8 +10,7 @@ function inicializarContadorCotizacion() {
 }
 
 function incrementarContadorCotizacion() {
-  let contador =
-    parseInt(localStorage.getItem("contadorCotizacion")) || 1;
+  let contador = parseInt(localStorage.getItem("contadorCotizacion")) || 1;
   contador++;
   localStorage.setItem("contadorCotizacion", contador);
   actualizarVisualizacionContador(contador);
@@ -21,15 +19,12 @@ function incrementarContadorCotizacion() {
 
 function actualizarVisualizacionContador(contador) {
   const contadorFormateado = contador.toString().padStart(4, "0");
-  document.getElementById("numero-cotizacion").textContent =
-    contadorFormateado;
+  document.getElementById("numero-cotizacion").textContent = contadorFormateado;
 }
 
 function calcularTotalFila(fila) {
-  const cantidad =
-    parseFloat(fila.querySelector("td:nth-child(1) input").value) || 0;
-  const unidad =
-    parseFloat(fila.querySelector("td:nth-child(3) input").value) || 0;
+  const cantidad = parseFloat(fila.querySelector("td:nth-child(1) input").value) || 0;
+  const unidad = parseFloat(fila.querySelector("td:nth-child(3) input").value) || 0;
   const totalInput = fila.querySelector("td:nth-child(4) input");
   const total = cantidad * unidad;
   totalInput.value = total.toFixed(2);
@@ -50,65 +45,15 @@ function calcularTotales() {
   document.getElementById("total").textContent = total.toFixed(2);
 }
 
-function obtenerIncrementoKm() {
-  const esKm = document.getElementById("chkKm").checked;
-  const esMillas = document.getElementById("chkMillas").checked;
-  if (esKm) return 5000;
-  if (esMillas) return 3100;
-  return 0;
-}
-
-function calcularProximoMotor() {
-  if (
-    !document.getElementById("chkKm").checked &&
-    !document.getElementById("chkMillas").checked
-  ) {
-    document.getElementById("motor_proximo").value = "";
-    return;
-  }
-  const incremento = obtenerIncrementoKm();
-  const motorActualStr = document.getElementById("motor_actual").value;
-  if (!motorActualStr.trim()) {
-    document.getElementById("motor_proximo").value = "";
-    return;
-  }
-  const motorActual = parseFloat(motorActualStr.replace(/,/g, "")) || 0;
-  const resultado = motorActual + incremento;
-  document.getElementById("motor_proximo").value =
-    resultado.toLocaleString();
-}
-
-function calcularProximoCaja() {
-  if (
-    !document.getElementById("chkKm").checked &&
-    !document.getElementById("chkMillas").checked
-  ) {
-    document.getElementById("caja_proximo").value = "";
-    return;
-  }
-  const incremento = obtenerIncrementoKm();
-  const cajaActualStr = document.getElementById("caja_actual").value;
-  if (!cajaActualStr.trim()) {
-    document.getElementById("caja_proximo").value = "";
-    return;
-  }
-  const cajaActual = parseFloat(cajaActualStr.replace(/,/g, "")) || 0;
-  const resultado = cajaActual + incremento;
-  document.getElementById("caja_proximo").value =
-    resultado.toLocaleString();
-}
-
 function actualizarFecha() {
   const fechaInput = document.getElementById("fecha");
   const hoy = new Date();
   const anio = hoy.getFullYear();
   const mes = String(hoy.getMonth() + 1).padStart(2, "0");
   const dia = String(hoy.getDate()).padStart(2, "0");
-  // Establecer el valor en formato YYYY-MM-DD
   fechaInput.value = `${anio}-${mes}-${dia}`;
 }
 
-// Llamar a la función al cargar la página
 document.addEventListener("DOMContentLoaded", actualizarFecha);
 
 function mostrarModalConfirmacion() {
@@ -120,14 +65,12 @@ function mostrarModalConfirmacion() {
 
   if (!logoLoaded) {
     modalTitle.textContent = "Advertencia";
-    modalText.textContent =
-      "Debe seleccionar un logo antes de generar el PDF.";
+    modalText.textContent = "Debe seleccionar un logo antes de generar el PDF.";
     btnConfirmar.textContent = "Aceptar";
     btnCancelar.style.display = "none";
   } else {
     modalTitle.textContent = "Confirmación";
-    modalText.textContent =
-      "¿Desea descargar la cotización en formato PDF?";
+    modalText.textContent = "¿Desea descargar la cotización en formato PDF?";
     btnConfirmar.textContent = "Confirmar";
     btnCancelar.style.display = "inline-block";
   }
@@ -174,10 +117,21 @@ function handleLogoUpload(event) {
 
 function generarPDF() {
   calcularTotales();
-  calcularProximoMotor();
-  calcularProximoCaja();
   incrementarContadorCotizacion();
-  document.getElementById("logo-input").style.display = "none";
+
+  const elementosAEliminar = [
+    document.getElementById("logo-input"),
+    document.getElementById("firma-input"),
+    document.getElementById("btnPDF"),
+    document.getElementById("confirmModal"),
+    document.getElementById("logo-placeholder"),
+    document.getElementById("firma-placeholder")
+  ];
+
+  // Ocultar los elementos antes de generar el PDF
+  elementosAEliminar.forEach((el) => {
+    if (el) el.style.display = "none";
+  });
 
   const element = document.getElementById("cotizacion");
   const opt = {
@@ -206,14 +160,22 @@ function generarPDF() {
     .set(opt)
     .save()
     .then(() => {
-      document.getElementById("logo-input").style.display = "block";
+      // Restaurar los elementos después del PDF
+      elementosAEliminar.forEach((el) => {
+        if (el) el.style.display = "";
+      });
+
       ocultarModalConfirmacion();
       setTimeout(mostrarMensajeExito, 500);
     })
     .catch((error) => {
       console.error("Error al generar el PDF:", error);
       alert("Ocurrió un error al generar el PDF: " + error.message);
-      document.getElementById("logo-input").style.display = "block";
+
+      elementosAEliminar.forEach((el) => {
+        if (el) el.style.display = "";
+      });
+
       ocultarModalConfirmacion();
     });
 }
@@ -222,9 +184,7 @@ window.onload = function () {
   actualizarFecha();
   inicializarContadorCotizacion();
 
-  document
-    .getElementById("logo-input")
-    .addEventListener("change", handleLogoUpload);
+  document.getElementById("logo-input").addEventListener("change", handleLogoUpload);
 
   const detalle = document.getElementById("detalle");
   for (let i = 0; i < 15; i++) {
@@ -264,36 +224,15 @@ window.onload = function () {
     detalle.appendChild(tr);
   }
 
-  document
-    .getElementById("btnPDF")
-    .addEventListener("click", mostrarModalConfirmacion);
-  document
-    .getElementById("btnConfirmar")
-    .addEventListener("click", function () {
-      if (logoLoaded) {
-        generarPDF();
-      } else {
-        ocultarModalConfirmacion();
-      }
-    });
-  document
-    .getElementById("btnCancelar")
-    .addEventListener("click", ocultarModalConfirmacion);
+  document.getElementById("btnPDF").addEventListener("click", mostrarModalConfirmacion);
 
-  document
-    .getElementById("chkKm")
-    .addEventListener("change", function () {
-      if (this.checked)
-        document.getElementById("chkMillas").checked = false;
-      calcularProximoMotor();
-      calcularProximoCaja();
-    });
+  document.getElementById("btnConfirmar").addEventListener("click", function () {
+    if (logoLoaded) {
+      generarPDF();
+    } else {
+      ocultarModalConfirmacion();
+    }
+  });
 
-  document
-    .getElementById("chkMillas")
-    .addEventListener("change", function () {
-      if (this.checked) document.getElementById("chkKm").checked = false;
-      calcularProximoMotor();
-      calcularProximoCaja();
-    });
+  document.getElementById("btnCancelar").addEventListener("click", ocultarModalConfirmacion);
 };

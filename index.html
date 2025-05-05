@@ -96,28 +96,20 @@
             <label><input type="checkbox" id="chkKm" /> Km</label>
             <label><input type="checkbox" id="chkMillas" /> Millas</label>
           </div>
-
+      
           <div class="mantenimiento-row">
             <div class="input-group-inline">
               <label for="motor_actual">Km Motor:</label>
-              <input
-                type="text"
-                id="motor_actual"
-                oninput="calcularProximoMotor()"
-              />
+              <input type="text" id="motor_actual" />
               <label for="motor_proximo">Próximo:</label>
-              <input type="text" id="motor_proximo" readonly />
+              <input type="text" id="motor_proximo" />
             </div>
-
+      
             <div class="input-group-inline">
               <label for="caja_actual">Km Caja:</label>
-              <input
-                type="text"
-                id="caja_actual"
-                oninput="calcularProximoCaja()"
-              />
+              <input type="text" id="caja_actual" />
               <label for="caja_proximo">Próximo:</label>
-              <input type="text" id="caja_proximo" readonly />
+              <input type="text" id="caja_proximo" />
             </div>
           </div>
         </div>
@@ -162,9 +154,14 @@
 
       <div class="bottom">
         <div class="signature">
-          <div class="signature-text">RECIBIDO</div>
+          <div class="signature-box" id="firma-box">
+            <div class="signature-placeholder" id="firma-placeholder">Agregar Firma</div>
+            <img id="firma-img" class="firma hidden" alt="Firma" />
+          </div>
+          <div class="signature-textR">RECIBIDO</div>
+          <input type="file" id="firma-input" accept="image/*" />
         </div>
-
+      
         <div class="signature">
           <div class="signature-text">
             N°
@@ -175,7 +172,68 @@
           <div class="signature-text">AUTORIZADO</div>
         </div>
       </div>
-    </div>
+      
+      <style>
+        /* Estilos para el recuadro de la firma */
+        .signature-box {
+          position: relative;
+          border-bottom: 1px solid #000;
+          width: 200px;
+          height: 60px;
+          margin-bottom: 5px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          margin-left: 15px; /* Mueve ligeramente a la derecha */
+          margin-top: -35px; /* Mueve ligeramente hacia arriba */
+        }
+
+        .signature-textR {
+    margin-top: -5;
+  }
+        
+        .signature-placeholder {
+          position: absolute;
+          border: 1px dashed #ccc;
+          width: 100%;
+          height: 100%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          color: #888;
+          font-size: 14px;
+        }
+        
+        .firma {
+          max-width: 100%;
+          max-height: 100%;
+          object-fit: contain;
+        }
+        
+        .hidden {
+          display: none;
+        }
+      </style>
+      
+      <script>
+        // Script para manejar la subida de la firma
+        document.getElementById('firma-input').addEventListener('change', function(e) {
+          if (e.target.files && e.target.files[0]) {
+            const reader = new FileReader();
+            
+            reader.onload = function(event) {
+              const firmaImg = document.getElementById('firma-img');
+              firmaImg.src = event.target.result;
+              firmaImg.classList.remove('hidden');
+              
+              // Ocultar el placeholder cuando se carga una imagen
+              document.getElementById('firma-placeholder').classList.add('hidden');
+            };
+            
+            reader.readAsDataURL(e.target.files[0]);
+          }
+        });
+      </script>
 
     <button class="download-btn" id="btnPDF">Descargar PDF</button>
 
@@ -196,6 +254,7 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
     <script src="app.js"></script>
   </body>
 </html>
